@@ -1,0 +1,125 @@
+---
+title: "Top Earning College Majors"
+subtitle: "FiveThirtyEight"
+author: "Kellie Haddon"
+date: "2010-2012"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+# Data Description
+This data is from the American Community Survey 2010-2012 Public Use Microdata Series
+* Table with basic demographic descripives*
+
+---
+
+```{r setup, include=FALSE}
+# Global options
+knitr::opts_chunk$set(
+  echo = FALSE, prompt = FALSE,
+  tidy = FALSE, comment = NA,
+  message = FALSE, warning = FALSE,
+  fig.align = 'center'
+)
+
+# Load libraries
+library(tidyverse)
+library(haven)
+library(forcats)
+library(scales)
+
+# Load data
+df = read_csv('recent-grads.csv')
+
+```
+
+# Analysis 1
+
+```{r, analysis1}
+df %>%
+  filter(Rank < 101) %>%
+  ggplot(aes(fct_infreq(Major_category))) +
+  geom_bar(fill = '#41afaa', alpha = 0.6, color = '#41afaa') +
+  labs(x = ' ', y = ' ', caption = ' ', title = 'Major Categories of Top 100 Earning Majors') +
+  geom_text(stat='count', aes(label=..count..), vjust=-1, family = 'Courier New') +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 40, vjust = 1.05, hjust = 1, color = 'black', size = 10,
+                                   family = 'Courier New'),
+        panel.grid = element_blank(),
+        axis.text.y = element_blank(),
+        title = element_text(size = 12, family = 'Courier New', face = 'bold'))
+```
+---
+# Analysis 2
+
+.pull-left[
+```{r, analysis2}
+df = df %>%
+  mutate(STEM = (case_when(Major_category == 'Agriculture & Natural Resources' ~ 'STEM',
+                           Major_category == 'Arts' ~ 'Non-STEM',
+                           Major_category == 'Biology & Life Science' ~ 'STEM',
+                           Major_category == 'Business' ~ 'Non-STEM',
+                           Major_category == 'Communications & Journalism' ~ 'Non-STEM',
+                           Major_category == 'Computers & Mathematics' ~ 'STEM',
+                           Major_category == 'Education' ~ 'Non-STEM',
+                           Major_category == 'Engineering' ~ 'STEM',
+                           Major_category == 'Health' ~ 'Non-STEM',
+                           Major_category == 'Humanities & Liberal Arts' ~ 'Non-STEM',
+                           Major_category == 'Industrial Arts & Consumer Services' ~ 'Non-STEM',
+                           Major_category == 'Interdisciplinary' ~ 'Non-STEM',
+                           Major_category == 'Law & Public Policy' ~ 'Non-STEM',
+                           Major_category == 'Physical Sciences' ~ 'STEM',
+                           Major_category == 'Psychology & Social Work' ~ 'Non-STEM',
+                           Major_category == 'Social Science' ~ 'Non-STEM')))
+
+df$STEM = as_factor(df$STEM)
+
+df %>%
+  ggplot(aes(x = ShareWomen, y = Median)) +
+  geom_point(color = '#41afaa', alpha = 0.6) +
+  geom_smooth(se = F, color = '#41afaa') +
+  scale_x_continuous(labels = scales::percent) +
+  scale_y_continuous(labels = scales::dollar_format()) +
+  labs(x = 'Share of Women', 
+       y = 'Median Earnings',
+       title = 'Share of Women vs. Median Earnings') +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 10, family = 'Courier New'),
+        axis.text.y = element_text(size = 10, family = 'Courier New'),
+        axis.title.x = element_text(size = 12, family = 'Courier New'),
+        axis.title.y = element_text(size = 12, family = 'Courier New'),
+        title = element_text(size = 14, face = 'bold', family = 'Courier New'))
+```
+]
+.pull-right[
+```{r, analysis3}
+    # sub-group STEM
+df %>%
+  ggplot(aes(x = ShareWomen, y = Median, color = STEM)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(se = F) +
+  facet_wrap(~ STEM) +
+  scale_x_continuous(labels = scales::percent) +
+  scale_y_continuous(labels = scales::dollar_format()) +
+  scale_color_manual(values = c('#d7642c', '#af4b91')) +
+  labs(x = 'Share of Women', 
+       y = 'Median Earnings',
+       title = 'Share of Women vs. Median Earnings',
+       subtitle = 'by Degree Type') +
+  guides(color = FALSE) +
+  theme_minimal() +
+  theme(strip.text.x = element_text(size = 12, face = 'bold', family = 'Courier New'),
+        axis.text.x = element_text(size = 10, family = 'Courier New'),
+        axis.text.y = element_text(size = 10, family = 'Courier New'),
+        axis.title.x = element_text(size = 12, family = 'Courier New'),
+        axis.title.y = element_text(size = 12, family = 'Courier New'),
+        title = element_text(size = 14, face = 'bold', family = 'Courier New'))
+```
+]
+        
+        
+        
