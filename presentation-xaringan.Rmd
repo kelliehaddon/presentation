@@ -11,7 +11,7 @@ output:
       highlightLines: true
       countIncrementalSlides: false
 ---
-# Data Description
+## Data Description
 This data is from the American Community Survey 2010-2012 Public Use Microdata Series
 * Table with basic demographic descripives*
 
@@ -37,7 +37,7 @@ df = read_csv('recent-grads.csv')
 
 ```
 
-# Analysis 1
+## Analysis 1
 
 ```{r, analysis1}
 df %>%
@@ -45,16 +45,15 @@ df %>%
   ggplot(aes(fct_infreq(Major_category))) +
   geom_bar(fill = '#41afaa', alpha = 0.6, color = '#41afaa') +
   labs(x = ' ', y = ' ', caption = ' ', title = 'Major Categories of Top 100 Earning Majors') +
-  geom_text(stat='count', aes(label=..count..), vjust=-1, family = 'Courier New') +
+  geom_text(stat='count', aes(label=..count..), vjust=-1, color = '#41afaa') +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 40, vjust = 1.05, hjust = 1, color = 'black', size = 10,
-                                   family = 'Courier New'),
+  theme(axis.text.x = element_text(angle = 40, vjust = 1.05, hjust = 1, color = 'black', size = 10),
         panel.grid = element_blank(),
         axis.text.y = element_blank(),
-        title = element_text(size = 12, family = 'Courier New', face = 'bold'))
+        title = element_text(size = 12, face = 'bold'))
 ```
 ---
-# Analysis 2
+## Analysis 2
 
 .pull-left[
 ```{r, analysis2}
@@ -88,11 +87,11 @@ df %>%
        y = 'Median Earnings',
        title = 'Share of Women vs. Median Earnings') +
   theme_minimal() +
-  theme(axis.text.x = element_text(size = 10, family = 'Courier New'),
-        axis.text.y = element_text(size = 10, family = 'Courier New'),
-        axis.title.x = element_text(size = 12, family = 'Courier New'),
-        axis.title.y = element_text(size = 12, family = 'Courier New'),
-        title = element_text(size = 14, face = 'bold', family = 'Courier New'))
+  theme(axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        title = element_text(size = 14, face = 'bold'))
 ```
 ]
 .pull-right[
@@ -112,12 +111,12 @@ df %>%
        subtitle = 'by Degree Type') +
   guides(color = FALSE) +
   theme_minimal() +
-  theme(strip.text.x = element_text(size = 12, face = 'bold', family = 'Courier New'),
-        axis.text.x = element_text(size = 10, family = 'Courier New'),
-        axis.text.y = element_text(size = 10, family = 'Courier New'),
-        axis.title.x = element_text(size = 12, family = 'Courier New'),
-        axis.title.y = element_text(size = 12, family = 'Courier New'),
-        title = element_text(size = 14, face = 'bold', family = 'Courier New'))
+  theme(strip.text.x = element_text(size = 12, face = 'bold'),
+        axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        title = element_text(size = 14, face = 'bold'))
 ```
 ]
         

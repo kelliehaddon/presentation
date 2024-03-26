@@ -45,10 +45,38 @@ library(tidyverse)
 library(haven)
 library(forcats)
 library(scales)
+library(showtext)
+library(knitr)
 
 # Read data
  # https://github.com/fivethirtyeight/data/tree/master/college-majors
 df = read_csv('recent-grads.csv')
+
+font_import()
+
+loadfonts()
+
+showtext_auto()
+
+font_add(family = 'Seaford Display', regular = 'C:/Users/kelliehaddon/Library/Group Containers/UBF8T346G9.Office/FontCache/4/CloudFonts/Seaford Display')
+
+font_import(paths = "/Users/kelliehaddon/Library/Fonts/19111619463.ttf")
+fonts()
+font <- "/Users/kelliehaddon/Library/Fonts/19111619463.ttf"
+
+font_import(prompt = FALSE)
+
+# description
+sum(df$Women, na.rm = T)
+
+df %>%
+  count(Major_category)
+Variable = c('Total', 'Men', 'Women', 'Sample', 'Majors', 'Major Categories')
+n = c('6,771,654', '2,876,426', '3,895,228', '61,602', '173', '16')
+
+df2 = tibble(Variable, n)
+
+kable(df2)
 
 
 # bar chart showing the frequency of majors in the top 100 by median earning by major category
@@ -60,10 +88,10 @@ df %>%
   geom_text(stat='count', aes(label=..count..), vjust=-1, family = 'Courier New') +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 40, vjust = 1.05, hjust = 1, color = 'black', size = 10,
-                                   family = 'Courier New'),
+                                   family = 'Seaford Display'),
         panel.grid = element_blank(),
         axis.text.y = element_blank(),
-        title = element_text(size = 12, family = 'Courier New', face = 'bold'))
+        title = element_text(size = 12, family = 'Seaford Display', face = 'bold'))
 
 
 # scatter plot showing the share of women in majors vs their earnings, by STEM
