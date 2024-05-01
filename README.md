@@ -1,4 +1,5 @@
-This [presentation](presentation.html) is part of an assignment in my data analysis class (SIS 750) at the School of International Service at American University. The assignment was to present data on a topic of choice with two analyses. The first analysis shows and describes data on a key variable and the second analysis shows and describes data on a second variable, including a sub-group comparison.
+# Presentation
+This [presentation](presentation.pdf) is part of an assignment in my data analysis class (SIS 750) at the School of International Service at American University. The assignment was to present data on a topic of choice with two analyses. The first analysis shows and describes data on a key variable and the second analysis shows and describes data on a second variable, including a sub-group comparison.
 
 The dataset is stored as both a [.csv file](recent-grads.csv).
 
