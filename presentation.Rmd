@@ -1,12 +1,11 @@
 ---
-title: "Top Earning College Majors"
+title: "Gender and College Majors"
 author: "Kellie Haddon"
+institute: "SIS 750: Data Analysis"
 output: 
   beamer_presentation:
-   theme: "Copenhagen"
-   colortheme: "seagull"
-   fig_width: 4
-   fig_height: 3
+   theme: "default"
+   colortheme: "dove"
 ---
 
 ```{r setup, include=FALSE}
@@ -30,12 +29,14 @@ library(knitr)
 df = read_csv('recent-grads.csv')
 ```
 
-## Data Description
+## **Data Description**
 Data Sources: American Community Survey 2010-2012 Public Use Microdata Series & FiveThirtyEight
 
-### Sample  
+### **Sample**
+* Individual-level survey data
+* Full-time, year-round workers
+* Undergraduate degree majors
 * Ages: <28  
-* Full-time, year-round
 
 ```{r, descriptives}
 Variable = c('Total', 'Men', 'Women', 'Sample', 'Majors', 'Major Categories')
@@ -46,25 +47,31 @@ df2 = tibble(Variable, n)
 kable(df2)
 ```
 
-## Top 100 Earning Major Categories
+## **Share of Women by Major Category**
+Percentage of full time workers who are women in each major category
+```{r, fig.dim=c(4.5,3), analysis1}
+df3 <- df %>%
+  group_by(Major_category) %>%
+  summarise(ShareWomen = mean(ShareWomen, na.rm = TRUE))
 
-```{r, analysis1}
-df %>%
-  filter(Rank < 101) %>%
-  ggplot(aes(fct_infreq(Major_category))) +
-  geom_bar(fill = '#41afaa', alpha = 0.6, color = '#41afaa') +
-  labs(x = ' ', y = ' ', caption = ' ', title = '') +
-  geom_text(stat='count', aes(label = ..count..), vjust = -0.7, size = 2, color = 'black') +
-  scale_y_continuous(limits = c(0, 35)) +
+df3 %>%
+  ggplot(aes(x = reorder(Major_category, +ShareWomen), y = ShareWomen)) + 
+  geom_col(fill = '#41afaa') +
+  coord_flip() +
+  labs(x = ' ', y = 'Share of Women', caption = ' ') +
+  geom_text(aes(label = paste0(round(ShareWomen * 100, 1), "%")), 
+            position = position_stack(vjust = 0.5), color = "white", size = 2.5, face = 'bold') +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 30, vjust = 1.15, hjust = 1, color = 'black', size = 6),
-        panel.grid = element_blank(),
-        axis.text.y = element_blank())
+  theme(axis.text.x = element_text(color = 'black', size = 8),
+        axis.text.y = element_text(color = 'black', size = 8, margin = margin(t = 0, r = -5, b = 0, l = 0)),
+        axis.title.x = element_text(color = 'black', size = 9),
+        axis.title.y = element_text(color = 'black', size = 9))
 ```
 
-## Share of Women vs. Median Earnings
-
-```{r, analysis2, width = 8, height = 5}
+## **Share of Women vs. Median Earnings**
+Majors plotted by the share of full time workers who are women and the median earnings of workers in each major
+```{r, fig.dim=c(4.5,2.75), analysis2}
 df = df %>%
   mutate(STEM = (case_when(Major_category == 'Agriculture & Natural Resources' ~ 'STEM',
                            Major_category == 'Arts' ~ 'Non-STEM',
@@ -87,38 +94,39 @@ df$STEM = as_factor(df$STEM)
 
 df %>%
   ggplot(aes(x = ShareWomen, y = Median)) +
-  geom_point(color = '#41afaa', alpha = 0.6) +
-  geom_smooth(se = F, color = '#41afaa') +
+  geom_point(color = '#af4b91', alpha = 0.2, size = 3) +
+  geom_smooth(se = F, color = '#af4b91') +
   scale_x_continuous(labels = scales::percent) +
   scale_y_continuous(labels = scales::dollar_format()) +
   labs(x = 'Share of Women', 
        y = 'Median Earnings') +
   theme_minimal() +
-  theme(axis.text.x = element_text(size = 6),
-        axis.text.y = element_text(size = 6),
-        axis.title.x = element_text(size = 8),
-        axis.title.y = element_text(size = 8))
+  theme(axis.text.x = element_text(color = 'black',size = 8),
+        axis.text.y = element_text(color = 'black',size = 8),
+        axis.title.x = element_text(color = 'black',size = 9),
+        axis.title.y = element_text(color = 'black',size = 9))
 ```
 
-## Share of Women vs. Median Earnings by Degree Type
-
-```{r, analysis3}
+## **Share of Women vs. Median Earnings by Degree Type**
+Majors plotted by the share of full time workers who are women and the median earnings of workers in each major separated by degree type (STEM vs. non-STEM)
+```{r, fig.dim=c(4.25,2.25), analysis3}
     # sub-group STEM
 df %>%
   ggplot(aes(x = ShareWomen, y = Median, color = STEM)) +
-  geom_point(alpha = 0.6) +
+  geom_point(alpha = 0.2, size = 3) +
   geom_smooth(se = F) +
   facet_wrap(~ STEM) +
   scale_x_continuous(labels = scales::percent) +
   scale_y_continuous(labels = scales::dollar_format()) +
-  scale_color_manual(values = c('#d7642c', '#af4b91')) +
+  scale_color_manual(values = c('#d7642c', '#e6a532')) +
   labs(x = 'Share of Women', 
        y = 'Median Earnings') +
   guides(color = FALSE) +
   theme_minimal() +
-  theme(strip.text.x = element_text(size = 8, face = 'bold'),
-        axis.text.x = element_text(size = 6),
-        axis.text.y = element_text(size = 6),
-        axis.title.x = element_text(size = 8),
-        axis.title.y = element_text(size = 8))
+  theme(strip.text.x = element_text(color = 'black',size = 8, face = 'bold'),
+        axis.text.x = element_text(color = 'black',size = 8),
+        axis.text.y = element_text(color = 'black',size = 8),
+        axis.title.x = element_text(color = 'black',size = 9),
+        axis.title.y = element_text(color = 'black',size = 9),
+        panel.margin = unit(1, "lines"))
 ```

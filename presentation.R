@@ -1,45 +1,5 @@
 # Presentation
 
-library(tidyverse)
-library(readxl)
-
-# prepare data
-ph = read_xlsx('philippines.xlsx')
-
-ph_wide = ph %>%
-  pivot_wider(names_from = "indicator",
-              values_from = "value")
-
-ph_wide = 
-  ph_wide %>%
-  rename(
-    tfr = `Total fertility rate 15-49`,
-    contraception = `Married women currently using any method of contraception`,
-    modern = `Married women currently using any modern method of contraception`,
-    need_fp = `Unmet need for family planning`,
-    demand_fp = `Demand for family planning satisfied by modern methods`,
-    marriage = `Median age at first marriage [Women]: 25-49`,
-    sex = `Median age at first sexual intercourse [Women]: 25-49`,
-    vacc = `Received all 8 basic vaccinations`,
-    bf = `Median duration of exclusive breastfeeding`,
-    hiv = `Women receiving an HIV test and receiving test results in the last 12 months`,
-    violence = `Physical or sexual violence committed by husband/partner`,
-    education = `Women with secondary or higher education`,
-    literate = `Women who are literate`,
-    hh_electricity = `Households with electricity`,
-    pop_electricity = `Population with electricity`
-  )
-
-clean = na.omit(ph_wide)
-
-clean %>%
-  count(region)
-
-clean$region <- sub("[(].*", "", clean$region)
-clean$region <- sub("*.[Regions : ].*", "", clean$region)
-
-# -------------------------------------------------------------
-
 # Load packages
 library(tidyverse)
 library(haven)
@@ -51,20 +11,6 @@ library(knitr)
 # Read data
  # https://github.com/fivethirtyeight/data/tree/master/college-majors
 df = read_csv('recent-grads.csv')
-
-font_import()
-
-loadfonts()
-
-showtext_auto()
-
-font_add(family = 'Seaford Display', regular = 'C:/Users/kelliehaddon/Library/Group Containers/UBF8T346G9.Office/FontCache/4/CloudFonts/Seaford Display')
-
-font_import(paths = "/Users/kelliehaddon/Library/Fonts/19111619463.ttf")
-fonts()
-font <- "/Users/kelliehaddon/Library/Fonts/19111619463.ttf"
-
-font_import(prompt = FALSE)
 
 # description
 sum(df$Women, na.rm = T)
@@ -79,19 +25,40 @@ df2 = tibble(Variable, n)
 kable(df2)
 
 
-# bar chart showing the frequency of majors in the top 100 by median earning by major category
+# bar chart showing the share of women in each major category
+df3 <- df %>%
+  group_by(Major_category) %>%
+  summarise(ShareWomen = mean(ShareWomen, na.rm = TRUE))
+
+df3 %>%
+  ggplot(aes(x = reorder(Major_category, +ShareWomen), y = ShareWomen)) + 
+  geom_col(fill = '#41afaa') +
+  coord_flip() +
+  labs(x = ' ', y = 'Share of Women', caption = ' ', title = 'Share of Women by Major Category',
+       subtitle = 'Percentage of full time workers who are women in each major category') +
+  geom_text(aes(label = paste0(round(ShareWomen * 100, 1), "%")), 
+            vjust = 0.5, hjust = -0.2, color = "black", size = 2) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(color = 'black', size = 6),
+        axis.text.y = element_text(color = 'black', size = 6),
+        axis.title.x = element_text(color = 'black', size = 8),
+        axis.title.y = element_text(color = 'black', size = 8))
+
+
+  # old
 df %>%
   filter(Rank < 101) %>%
   ggplot(aes(fct_infreq(Major_category))) +
   geom_bar(fill = '#41afaa', alpha = 0.6, color = '#41afaa') +
-  labs(x = ' ', y = ' ', caption = ' ', title = 'Major Categories of Top 100 Earning Majors') +
-  geom_text(stat='count', aes(label=..count..), vjust=-1, family = 'Courier New') +
+  labs(x = ' ', y = ' ', caption = ' ', title = '') +
+  geom_text(stat='count', aes(label = ..count..), vjust = -0.7, size = 2, color = 'black') +
+  scale_y_continuous(limits = c(0, 35)) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 40, vjust = 1.05, hjust = 1, color = 'black', size = 10,
-                                   family = 'Seaford Display'),
+  theme(axis.text.x = element_text(angle = 30, vjust = 1.15, hjust = 1, color = 'black', size = 6),
         panel.grid = element_blank(),
-        axis.text.y = element_blank(),
-        title = element_text(size = 12, family = 'Seaford Display', face = 'bold'))
+        axis.text.y = element_blank())
+
 
 
 # scatter plot showing the share of women in majors vs their earnings, by STEM
@@ -119,21 +86,61 @@ df$STEM = as_factor(df$STEM)
     # full population
 df %>%
   ggplot(aes(x = ShareWomen, y = Median)) +
+  geom_point(color = '#af4b91', alpha = 0.3, size = 3) +
+  geom_smooth(se = F, color = '#af4b91') +
+  scale_x_continuous(labels = scales::percent) +
+  scale_y_continuous(labels = scales::dollar_format()) +
+  labs(x = 'Share of Women', 
+       y = 'Median Earnings',
+       title = 'Share of Women vs. Median Earnings',
+       subtitle = 'Majors plotted by the share of full time workers who are women \nand the median earnings of workers in each major') +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 6),
+        axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8))
+
+  # old
+df %>%
+  ggplot(aes(x = ShareWomen, y = Median)) +
   geom_point(color = '#41afaa', alpha = 0.6) +
   geom_smooth(se = F, color = '#41afaa') +
   scale_x_continuous(labels = scales::percent) +
   scale_y_continuous(labels = scales::dollar_format()) +
   labs(x = 'Share of Women', 
-       y = 'Median Earnings',
-       title = 'Share of Women vs. Median Earnings') +
+       y = 'Median Earnings') +
   theme_minimal() +
-  theme(axis.text.x = element_text(size = 10, family = 'Courier New'),
-        axis.text.y = element_text(size = 10, family = 'Courier New'),
-        axis.title.x = element_text(size = 12, family = 'Courier New'),
-        axis.title.y = element_text(size = 12, family = 'Courier New'),
-        title = element_text(size = 14, face = 'bold', family = 'Courier New'))
+  theme(axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 6),
+        axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8))
+
+
+
 
     # sub-group STEM
+df %>%
+  ggplot(aes(x = ShareWomen, y = Median, color = STEM)) +
+  geom_point(alpha = 0.3, size = 3) +
+  geom_smooth(se = F) +
+  facet_wrap(~ STEM) +
+  scale_x_continuous(labels = scales::percent) +
+  scale_y_continuous(labels = scales::dollar_format()) +
+  scale_color_manual(values = c('#d7642c', '#e6a532')) +
+  labs(x = 'Share of Women', 
+       y = 'Median Earnings',
+       title = 'Share of Women vs. Median Earnings',
+       subtitle = 'Majors plotted by the share of full time workers who are women \n and the median earnings of workers in each major, by degree type') +
+  guides(color = FALSE) +
+  theme_minimal() +
+  theme(strip.text.x = element_text(size = 8, face = 'bold'),
+        axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 6),
+        axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8),
+        panel.margin = unit(1, "lines"))
+
+  # old
 df %>%
   ggplot(aes(x = ShareWomen, y = Median, color = STEM)) +
   geom_point(alpha = 0.6) +
@@ -143,16 +150,11 @@ df %>%
   scale_y_continuous(labels = scales::dollar_format()) +
   scale_color_manual(values = c('#d7642c', '#af4b91')) +
   labs(x = 'Share of Women', 
-       y = 'Median Earnings',
-       title = 'Share of Women vs. Median Earnings',
-       subtitle = 'by Degree Type') +
+       y = 'Median Earnings') +
   guides(color = FALSE) +
   theme_minimal() +
-  theme(strip.text.x = element_text(size = 12, face = 'bold', family = 'Courier New'),
-        axis.text.x = element_text(size = 10, family = 'Courier New'),
-        axis.text.y = element_text(size = 10, family = 'Courier New'),
-        axis.title.x = element_text(size = 12, family = 'Courier New'),
-        axis.title.y = element_text(size = 12, family = 'Courier New'),
-        title = element_text(size = 14, face = 'bold', family = 'Courier New'))
-
-
+  theme(strip.text.x = element_text(size = 8, face = 'bold'),
+        axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 6),
+        axis.title.x = element_text(size = 8),
+        axis.title.y = element_text(size = 8))
