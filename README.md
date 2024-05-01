@@ -3,4 +3,4 @@ This [presentation](presentation.pdf) is part of an assignment in my data analys
 
 This presentation pulls from [data](recent-grads.csv) published by the American Community Survey 2010-2012 Public Use Microdata Series & FiveThirtyEight and describes the relationship between the share of women in majors and the median earnings of recent graduates (less than 28 years old) who are full-time, year-roud workers, by major.
 
-Also included in this repository is the [script](presentation.R) used in the initial analysis and the [R Markdown](presentation.Rmd) file used to create the presentation using a Beamer template.
+Also included in this [repository](https://github.com/kelliehaddon/presentation) is the [script](presentation.R) used in the initial analysis and the [R Markdown](presentation.Rmd) file used to create the presentation using a Beamer template.
